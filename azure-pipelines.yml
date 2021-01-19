@@ -4,24 +4,15 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-resources:
-  repositories:
-    - repository: PolarisTemplateRepo # name needs to stay the same!
-      type: git
-      name: Engineering Enablement/templates
-      ref: refs/heads/master
-
-    - repository: BDTemplateRepo #repository name can be different
-      type: git
-      name: Engineering Enablement/template-blackduck
-      ref: refs/heads/master
-
-    - repository: sharedLibrary
-      type: git
-      name: templates
-      ref: refs/heads/master
-
-stages:
-  - template: build/microservice-build.yml@sharedLibrary
-    parameters:
-      acrRepositoryName: 'spring-reactive-sample-app-dee'
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.11'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: false
+    testResultsFiles: '**/TEST-*.xml'
+    goals: 'clean package spring-boot:build-image'
+    options: '$(MAVEN_OPTS) -B -e -Dspring-boot.build-image.imageName=$(IMAGE_NAME)'
