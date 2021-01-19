@@ -1,0 +1,27 @@
+trigger:
+  - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+resources:
+  repositories:
+    - repository: PolarisTemplateRepo # name needs to stay the same!
+      type: git
+      name: Engineering Enablement/templates
+      ref: refs/heads/master
+
+    - repository: BDTemplateRepo #repository name can be different
+      type: git
+      name: Engineering Enablement/template-blackduck
+      ref: refs/heads/master
+
+    - repository: sharedLibrary
+      type: git
+      name: templates
+      ref: refs/heads/master
+
+stages:
+  - template: build/microservice-build.yml@sharedLibrary
+    parameters:
+      acrRepositoryName: 'spring-reactive-sample-app-dee'
